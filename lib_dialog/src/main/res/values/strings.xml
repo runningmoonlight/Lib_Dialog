@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Lib_Dialog</string>
+
+    <string name="picker_cancel">取消</string>
+    <string name="picker_confirm">确认</string>
+
+    <string name="picker_time_year">年</string>
+    <string name="picker_time_month">月</string>
+    <string name="picker_time_day">日</string>
+    <string name="picker_time_hour">时</string>
+    <string name="picker_time_minute">分</string>
+    <string name="picker_time_second">秒</string>
+</resources>

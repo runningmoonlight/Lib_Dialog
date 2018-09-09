@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_top_bar"
+    android:orientation="horizontal" 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_picker_top_bar">
+
+    <TextView
+        android:id="@+id/tv_cancel"
+        style="@style/PickerTopBarTextStyle"
+        android:text="@string/picker_cancel"/>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textColor="@color/picker_top_title"
+        android:textSize="@dimen/picker_title_textsize"
+        android:gravity="center"
+        android:ellipsize="end"/>
+
+    <TextView
+        android:id="@+id/tv_confirm"
+        style="@style/PickerTopBarTextStyle"
+        android:text="@string/picker_confirm"/>
+</LinearLayout>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="WheelView">
+        <attr name="wvGravity">
+            <enum name="center" value="17" />
+            <enum name="left" value="3" />
+            <enum name="right" value="5" />
+        </attr>
+        <attr name="wvTextSize" format="dimension" />
+        <attr name="wvOuterTextColor" format="color" />
+        <attr name="wvCenterTextColor" format="color" />
+        <attr name="wvDividerColor" format="color" />
+        <attr name="wvLineSpaceMultiplier" format="float"/>
+    </declare-styleable>
+
+
+
+</resources>

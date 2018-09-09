@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/picker_top_bar_height"
+        layout="@layout/view_picker_top_bar"/>
+
+
+
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/white">
+
+        <com.running.moonlight.lib_dialog.picker.wheel.view.WheelView
+            android:id="@+id/wv_year"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.96" />
+
+        <com.running.moonlight.lib_dialog.picker.wheel.view.WheelView
+            android:id="@+id/wv_month"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.running.moonlight.lib_dialog.picker.wheel.view.WheelView
+            android:id="@+id/wv_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.running.moonlight.lib_dialog.picker.wheel.view.WheelView
+            android:id="@+id/wv_hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.running.moonlight.lib_dialog.picker.wheel.view.WheelView
+            android:id="@+id/wv_minute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.running.moonlight.lib_dialog.picker.wheel.view.WheelView
+            android:id="@+id/wv_second"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+
+
+</LinearLayout>

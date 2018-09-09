@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="自定义Dialog"
+        android:textSize="15sp"
+        android:layout_marginTop="20dp"
+        android:onClick="showCustom"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="已有Dialog"
+        android:textSize="15sp"
+        android:layout_marginTop="20dp"
+        android:onClick="showSystem"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Option选择器"
+        android:textSize="15sp"
+        android:layout_marginTop="20dp"
+        android:onClick="showOption"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="多项联动选择器"
+        android:textSize="15sp"
+        android:layout_marginTop="20dp"
+        android:onClick="showLinkedOptions"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="非联动多项选择器"
+        android:textSize="15sp"
+        android:layout_marginTop="20dp"
+        android:onClick="showUnLinkedOptions"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="时间选择器"
+        android:textSize="15sp"
+        android:layout_marginTop="20dp"
+        android:onClick="showTime"/>
+
+</LinearLayout>

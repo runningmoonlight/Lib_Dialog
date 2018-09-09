@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="picker_wv_textsize">18sp</dimen>
+
+    <dimen name="picker_btn_textsize">20sp</dimen>
+    <dimen name="picker_title_textsize">21sp</dimen>
+
+    <dimen name="picker_top_bar_height">44dp</dimen>
+</resources>

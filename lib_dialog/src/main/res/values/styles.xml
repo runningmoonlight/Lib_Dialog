@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LibDialog" parent="@android:style/Theme.Dialog">
+        <!--标题栏-->
+        <item name="android:windowNoTitle">true</item>
+        <!--边框-->
+        <item name="android:windowFrame">@null</item>
+        <!-- 对话框是否有遮盖 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!--对话框出现时背景是否变暗-->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!--对话框背-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--着色缓存-->
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <!-- 输入法弹出时自适应 -->
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <!--是否浮现在activity之上-->
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <style name="SlideBottomAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/enter_slide_bottom</item>
+        <item name="android:windowExitAnimation">@anim/exit_slide_bottom</item>
+    </style>
+
+    <style name="PickerTopBarTextStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:textSize">@dimen/picker_btn_textsize</item>
+        <item name="android:textColor">@drawable/btn_picker_top_text_selector</item>
+    </style>
+</resources>
