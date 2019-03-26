@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,20 +175,29 @@ public abstract class BaseDialogFragment extends DialogFragment {
 
     /**
      * 自定义显示dialogFragment的方法，防止重复添加
-     * @param manager
-     * @param tag
-     * @return
+     * @param manager manager
+     * @param tag tag
+     * @return BaseDialogFragment，因为返回值不一样，不重写show方法
      */
     public BaseDialogFragment showDialog(FragmentManager manager, String tag) {
-        FragmentTransaction ft = manager.beginTransaction();
-        if (this.isAdded()) {
-            ft.remove(this).commit();
+        manager.executePendingTransactions();//确保之前的dialog操作执行完成
+        if (this.isAdded()) {//防止重复添加的错误
+            return this;
         }
-        ft.add(this, tag);
-        ft.commitAllowingStateLoss();
+
+        //DialogFragment的show方法默认调用commit()，可能会导致IllegalStateException : Can not perform
+        // this action after onSaveInstanceSate；
+        //DialogFragment没有commitAllowingStateLoss()方法，为防止异常，这里将异常捕获；
+        //如果DialogFragment在Activity的生命周期方法中调用，建议DialogFragment在Activity#onCreate()
+        // 或者Activity#onPostResume()或者FragmentActivity#onResumeFragments()中调用，这样确保状态
+        // 被保存，不会抛出异常
+        try {
+            super.show(manager, tag);
+        } catch (IllegalStateException ignore) {
+            //异常忽略
+        }
         return this;
     }
-
     public BaseDialogFragment setHMargin(int hMargin) {
         this.mHMargin = hMargin;
         return this;
