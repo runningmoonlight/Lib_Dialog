@@ -1,9 +1,10 @@
-# Lib_Dialog使用文档
+# Lib_Dialog文档
 
 ### 1.概述
-&emsp;&emsp;`Lib_Dialog`是通过封装`DialogFragment`实现的`Dialog`模块，使用链式调用对`Dialog`进行设置，可替代`PopupWindow`，方便灵活。  
+&emsp;&emsp;`Lib_Dialog`是对封装`DialogFragment`的`Dialog`模块，使用链式调用对`Dialog`进行设置。  
 &emsp;&emsp;`Lib_Dialog`有良好的扩展性，有两个方便使用继承类：一个是`CustomDialog`，继承于`BaseDialogFragment`，用于实现布局简单的`自定义View`的`Dialog`；一个是`DefinedDialog`，直接继承于`DialogFragment`，用于直接使用系统的`Dialog`和已定义好的`Dialog`（已定义好的`Dialog`本可以直接继承`DialogFragment`来扩展，`DefinedDialog`统一了调用风格。  
-&emsp;&emsp;在封装的基础上重写了选项选择器和时间选择器，根据业务需求，选项选择器分别有单项选择器、多项（最多三项）不联动选择器和多项联动选择器。  
+&emsp;&emsp;在封装的基础上重写了选项选择器和时间选择器，选项选择器分别有单项选择器、多项（最多三项）不联动选择器和多项联动选择器。   
+&emsp;&emsp;参考了两个开源项目[NiceDialog](https://github.com/SheHuan/NiceDialog)和[Android-PickerView](https://github.com/Bigkoo/Android-PickerView)。
 
 ### 2.CustomDialog
 `CustomDialog`使用示例：  
@@ -100,7 +101,7 @@ public void showSystem(View view) {
 &emsp;&emsp;实现原理见[Android-PickerView系列之源码解析篇（二）](https://blog.csdn.net/qq_22393017/article/details/59488906)  
 
 ### 5.SingleOptionDialog 
-&emsp;&emsp;单项选择器，因为项目中单项选择的需求较多，所以单独分出来写，这样代码也简介清晰。  
+&emsp;&emsp;单项选择器。  
 使用示例：  
 <pre>
 public void showOption(View view) {
@@ -185,7 +186,7 @@ public void showLinkedOptions(View view) {
 &emsp;&emsp;注意，`LinkedOptionsDialog`通过泛型控制实体类形参，对于数字或`String`，使用`init(List,List,List)`做初始化；对于其他实体类，需要实现`IPickerViewEntity`接口,用于在获取绘制在`WheelView`中的内容，还需要实现`Serializable`接口，因为保存信息的时候需要序列化（说明，`ArrayList`不支持`Parcelable`序列化，为了简单统一，选项选择器中的实体类都使用`Serializable`）,初始化使用`init()`方法，然后调用`setOptionsList(ArrayList, ArrayList, ArrayList)`方法设置实体类数据列表。  
 
 ### 7.UnLinkedOptionsDialog  
-&emsp;&emsp;多项非联动选择器，最多三项，目前展业项目没有用到。  
+&emsp;&emsp;多项非联动选择器，最多三项。  
 使用示例：
 <pre>
 public void showUnLinkedOptions(View view) {
@@ -280,8 +281,12 @@ public void showUnLinkedOptions(View view) {
 1. 当`WheelView`中绘制的内容过长时，可能会和`Label`重叠，可能会超出`WheelView`的宽度；
 2. 目前默认`Lable`固定绘制在居中`WheelView`的右侧，如果想让每个`WheelView`都带`Label`的话，只能把`Label`添加到实体类中；  
 3. `WheelView`默认展示11个`Item`，不可修改；这样，`WheelView`的高度由文字大小和间距决定。文字很大时，UI会有影响。  
-  
-### 10.最后
-&emsp;&emsp;有问题请联系邮箱*lihengd@yonyou.com*，欢迎交流，提出修改建议。
+
+### 10.感谢  
+[NiceDialog](https://github.com/SheHuan/NiceDialog)  
+[Android-PickerView](https://github.com/Bigkoo/Android-PickerView).  
+
+### 11.最后
+&emsp;&emsp;有问题请联系邮箱*ymwm116@163.com*，欢迎交流，提出修改建议。
 
 
