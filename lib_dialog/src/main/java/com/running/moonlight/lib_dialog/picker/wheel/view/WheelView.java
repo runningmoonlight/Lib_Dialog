@@ -13,20 +13,18 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.widget.Scroller;
 
 import com.running.moonlight.lib_dialog.R;
 import com.running.moonlight.lib_dialog.picker.entity.IPickerViewEntity;
 import com.running.moonlight.lib_dialog.picker.wheel.adapter.WheelAdapter;
 
 import java.util.Locale;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 3d滚轮控件
@@ -44,11 +42,12 @@ public class WheelView extends View {
 
     private Context mContext;
     Handler mHandler;
-    private GestureDetector mGestureDetector;
-    private OnWheelViewItemSelectedListener mOnItemSelectedListener;
+    private Scroller mScroller;
+    private VelocityTracker mVelocityTracker;
+    private int mMinimumFlingVelocity;
+    private int mMaximumFlingVelocity;
 
-    private ScheduledExecutorService mExecutor = Executors.newSingleThreadScheduledExecutor();
-    private ScheduledFuture<?> mFuture;
+    private OnWheelViewItemSelectedListener mOnItemSelectedListener;
 
     private Paint mOuterTextPaint;
     private Paint mCenterTextPaint;
@@ -72,13 +71,16 @@ public class WheelView extends View {
     private int mMaxTextHeight;
     float mItemHeight;// 每行高度
 
+    private int mMinY;
+    private int mMaxY;
+    private int mTotalScrollY;// 滚动总高度y值
+
     private static final float LINE_SPACE_MULTIPLIER = 1.4F;
 
     private float mFirstLineY;// 第一条分隔线Y坐标值
     private float mSecondLineY;// 第二条分隔线Y坐标
     private float mCenterY;// 中间Y坐标
 
-    int mTotalScrollY;// 滚动总高度y值
     int mInitPosition;// 默认选中item的位置
     private int mSelectedItem;// 选中的Item
     private int mPreCurrentIndex;//滑动中实际选中的item
@@ -146,9 +148,14 @@ public class WheelView extends View {
     }
 
     private void initFlingField() {
-        mHandler = new MessageHandler(this);
-        mGestureDetector = new GestureDetector(mContext, new LoopViewGestureListener(this));
-        mGestureDetector.setIsLongpressEnabled(false);
+//        mHandler = new MessageHandler(this);
+//        mGestureDetector = new GestureDetector(mContext, new LoopViewGestureListener(this));
+//        mGestureDetector.setIsLongpressEnabled(false);
+
+        mScroller = new Scroller(mContext);
+
+        mMinimumFlingVelocity = ViewConfiguration.get(mContext).getScaledMinimumFlingVelocity();
+        mMaximumFlingVelocity = ViewConfiguration.get(mContext).getScaledMaximumFlingVelocity();
     }
 
     private void initCenterContentOffset() {
@@ -233,6 +240,9 @@ public class WheelView extends View {
         mCenterTextPaint.getTextBounds("\u661F\u671F", 0, 2, rect); // 星期
         mMaxTextHeight = rect.height();
         mItemHeight = mLineSpaceMultiplier * mMaxTextHeight;
+
+        mMinY = (int) (-mInitPosition * mItemHeight);
+        mMaxY = (int) ((mAdapter.getItemsCount() - 1 - mInitPosition) * mItemHeight);
     }
 
     @Override
@@ -394,41 +404,51 @@ public class WheelView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        boolean eventConsumed = mGestureDetector.onTouchEvent(event);
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(event);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mActionDownTime = System.currentTimeMillis();
-                cancelFuture();
+                if (!mScroller.isFinished()) {
+                    mScroller.abortAnimation();
+                }
                 mActionY = event.getRawY();
                 mMarkPosition = mSelectedItem;
                 break;
             case MotionEvent.ACTION_MOVE:
                 float dy = mActionY - event.getRawY();
                 mActionY = event.getRawY();
-                int totalScrollYTemp = mTotalScrollY;
+                int scrollYTemp = mTotalScrollY;
                 // 边界处理
                 if (!mLoop) {
-                    int top = (int) (-mInitPosition * mItemHeight);
-                    int bottom = (int) ((mAdapter.getItemsCount() - 1 - mInitPosition) * mItemHeight);
-                    if ((mTotalScrollY <= top && dy < 0)) {
-                        mTotalScrollY = top;
-                    } else if (mTotalScrollY >= bottom && dy > 0) {
-                        mTotalScrollY = bottom;
+
+                    if ((scrollYTemp <= mMinY && dy < 0)) {
+                        scrollYTemp = mMinY;
+                    } else if (scrollYTemp >= mMaxY && dy > 0) {
+                        scrollYTemp = mMaxY;
                     } else {
-                        mTotalScrollY = (int) (mTotalScrollY + dy);
+                        scrollYTemp = (int) (scrollYTemp + dy);
                     }
                 } else {
-                    mTotalScrollY = (int) (mTotalScrollY + dy);
+                    scrollYTemp = (int) (scrollYTemp + dy);
                 }
-                if (totalScrollYTemp != mTotalScrollY) {
+                if (scrollYTemp != mTotalScrollY) {
+                    mTotalScrollY = scrollYTemp;
+                    Log.i(TAG, "mTotalScrollY-->" + mTotalScrollY);
                     invalidate();
                 }
                 break;
             case MotionEvent.ACTION_UP:
-            default:
-                if (!eventConsumed) {
-
+            case MotionEvent.ACTION_CANCEL:
+                final VelocityTracker velocityTracker = mVelocityTracker;
+                velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
+                final float velocityY = velocityTracker.getYVelocity();
+                if (Math.abs(velocityY) > mMinimumFlingVelocity && event.getAction() == MotionEvent.ACTION_UP) {
+                    mScroller.fling(0, mTotalScrollY, 0, (int) velocityY, 0, 0, mMinY, mMaxY);
+                } else {
                     float y = event.getY();
                     double l = Math.acos((mRadius - y) / mRadius) * mRadius;
                     int circlePosition = (int) ((l + mItemHeight / 2) / mItemHeight);
@@ -448,14 +468,17 @@ public class WheelView extends View {
                     }
                 }
                 break;
+            default:
+                //其他事件不处理
+                break;
         }
         return true;
     }
 
     void smoothScroll(ACTION action) {
-        cancelFuture();
+
         if (action == ACTION.FLING || action == ACTION.DRAG) {
-            mOffset = (int) ((mTotalScrollY % mItemHeight + mItemHeight) % mItemHeight);
+            mOffset = (int) (mTotalScrollY % mItemHeight);
             if ((float) mOffset > mItemHeight / 2.0F) {
                 mOffset = (int) (mItemHeight - (float) mOffset);
             } else {
@@ -463,21 +486,16 @@ public class WheelView extends View {
             }
         }
         // 停止的时候，位置有偏移，不是全部都能正确停止到中间位置的，这里把文字位置挪回中间去
-        mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, mOffset),
-                0, 10, TimeUnit.MILLISECONDS);
+        mScroller.startScroll(0, mTotalScrollY, 0, mOffset);
     }
 
-    protected final void scrollBy(float velocityY) {
-        cancelFuture();
-        mFuture = mExecutor.scheduleWithFixedDelay(new InertiaTimerTask(this, velocityY),
-                0, FLING_VELOCITY, TimeUnit.MILLISECONDS);
-    }
-
-    public void cancelFuture() {
-        if (mFuture != null && !mFuture.isCancelled()) {
-            mFuture.cancel(true);
-            mFuture = null;
+    @Override
+    public void computeScroll() {
+        if (mScroller.computeScrollOffset()) {
+            mTotalScrollY = mScroller.getCurrY();
+            invalidate();
         }
+
     }
 
     /**
