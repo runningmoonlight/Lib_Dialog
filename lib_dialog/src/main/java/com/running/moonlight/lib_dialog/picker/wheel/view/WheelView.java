@@ -209,7 +209,7 @@ public class WheelView extends View {
         mMeasuredHeight = (int) ((mHalfCircumference * 2) / Math.PI);
         // 半径 = 直径 / 2
         mRadius = mMeasuredHeight / 2;
-        // 控件宽度，支持weight
+        // 控件宽度
         mMeasuredWidth = MeasureSpec.getSize(mWidthMeasureSpec);
         // 计算两条横线和控件中间点的Y位置
         mFirstLineY = (mMeasuredHeight - mItemHeight) / 2.0F;
@@ -395,7 +395,6 @@ public class WheelView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean eventConsumed = mGestureDetector.onTouchEvent(event);
-        boolean isIgnore = false;//控制是否重绘UI
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -407,20 +406,22 @@ public class WheelView extends View {
             case MotionEvent.ACTION_MOVE:
                 float dy = mActionY - event.getRawY();
                 mActionY = event.getRawY();
-                mTotalScrollY = (int) (mTotalScrollY + dy);
+                int totalScrollYTemp = mTotalScrollY;
                 // 边界处理
                 if (!mLoop) {
-                    float top = -mInitPosition * mItemHeight;
-                    float bottom = (mAdapter.getItemsCount() - 1 - mInitPosition) * mItemHeight;
-
-                    if ((mTotalScrollY <= top && dy < 0) || (mTotalScrollY >= bottom && dy > 0)) {
-                        mTotalScrollY -= dy;
-                        isIgnore = true;
+                    int top = (int) (-mInitPosition * mItemHeight);
+                    int bottom = (int) ((mAdapter.getItemsCount() - 1 - mInitPosition) * mItemHeight);
+                    if ((mTotalScrollY <= top && dy < 0)) {
+                        mTotalScrollY = top;
+                    } else if (mTotalScrollY >= bottom && dy > 0) {
+                        mTotalScrollY = bottom;
                     } else {
-                        isIgnore = false;
+                        mTotalScrollY = (int) (mTotalScrollY + dy);
                     }
+                } else {
+                    mTotalScrollY = (int) (mTotalScrollY + dy);
                 }
-                if (!isIgnore) {
+                if (totalScrollYTemp != mTotalScrollY) {
                     invalidate();
                 }
                 break;
@@ -431,7 +432,7 @@ public class WheelView extends View {
                     float y = event.getY();
                     double l = Math.acos((mRadius - y) / mRadius) * mRadius;
                     int circlePosition = (int) ((l + mItemHeight / 2) / mItemHeight);
-                    float extraOffset = (mTotalScrollY % mItemHeight + mItemHeight) % mItemHeight;
+                    float extraOffset = mTotalScrollY % mItemHeight;
                     // extraOffset常常偏差几个像素，导致点击事件会滑动到上一个item去，这里作校正
                     if (extraOffset < 5F || (extraOffset > mItemHeight - 5F && extraOffset < mItemHeight)) {
                         extraOffset = 0F;
